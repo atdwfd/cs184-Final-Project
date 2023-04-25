@@ -20,6 +20,7 @@ namespace parameters {
 inline constexpr double p = 1.0;
 inline constexpr double l = 1.0;
 inline constexpr double radius = std::sqrt((p * p) + (l * l));
+inline constexpr double M = 10000000;
 } // namespace parameters
 
 class Ray {
@@ -29,7 +30,7 @@ public:
     const Position<double> unit_vector_N = global_spherical_polar_basis(
         camera_direction_theta, camera_direction_phi);
     p_l = -unit_vector_N.x;
-    p_theta = radius * unit_vector_N.z;
+    p_theta = parameters::radius * unit_vector_N.z;
     l = camera_location.x;
     theta = camera_location.y;
     phi = camera_location.z;
@@ -50,15 +51,29 @@ double constants_of_motion_b() {}
 
 double constants_of_motion_B2() {}
 
-double delta_length() {}
+double constants_drdl(Ray& ray){
+  return (2/M_PI) * std::atan(2 * ray.l / (M_PI * parameters::M));
+}
 
-double delta_theta() {}
+double delta_length(Ray& ray) {
+  return ray.p_l;
+}
 
-double delta_phi() {}
+double delta_theta(Ray& ray) {
+  return ray.p_theta/(parameters::radius * parameters::radius);
+}
 
-double delta_plength() {}
+double delta_phi(Ray& ray) {
+  return constants_of_motion_b() /(parameters::radius * parameters::radius * std::sin(ray.theta) * std::sin(ray.theta));
+}
 
-double delta_ptheta() {}
+double delta_plength(Ray& ray) {
+  return constants_of_motion_B2() * constants_of_motion_B2() * constants_drdl(ray) / (parameters::radius * parameters::radius * parameters::radius);
+}
+
+double delta_ptheta(Ray& ray) {
+  return constants_of_motion_b() * constants_of_motion_b() * std::cos(ray.theta) / (parameters::radius * parameters::radius * std::sin(ray.theta) * std::sin(ray.theta) * std::sin(ray.theta));
+}
 
 double wormhole_radius(double length, double p /* should be a constant */) {
   return std::sqrt((p * p) + (length * length));
