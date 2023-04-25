@@ -47,9 +47,13 @@ public:
   double p_phi;
 };
 
-double constants_of_motion_b() {}
+double constants_of_motion_b(Ray& ray) {
+  return ray.p_phi;
+}
 
-double constants_of_motion_B2() {}
+double constants_of_motion_B2(Ray& ray) {
+  return ray.p_theta * ray.p_theta + ray.p_phi * ray.p_phi / (std::sin(ray.theta) * std::sin(ray.theta));
+}
 
 double constants_drdl(Ray& ray){
   return (2/M_PI) * std::atan(2 * ray.l / (M_PI * parameters::M));
@@ -64,15 +68,15 @@ double delta_theta(Ray& ray) {
 }
 
 double delta_phi(Ray& ray) {
-  return constants_of_motion_b() /(parameters::radius * parameters::radius * std::sin(ray.theta) * std::sin(ray.theta));
+  return constants_of_motion_b(ray) /(parameters::radius * parameters::radius * std::sin(ray.theta) * std::sin(ray.theta));
 }
 
 double delta_plength(Ray& ray) {
-  return constants_of_motion_B2() * constants_of_motion_B2() * constants_drdl(ray) / (parameters::radius * parameters::radius * parameters::radius);
+  return constants_of_motion_B2(ray) * constants_of_motion_B2(ray) * constants_drdl(ray) / (parameters::radius * parameters::radius * parameters::radius);
 }
 
 double delta_ptheta(Ray& ray) {
-  return constants_of_motion_b() * constants_of_motion_b() * std::cos(ray.theta) / (parameters::radius * parameters::radius * std::sin(ray.theta) * std::sin(ray.theta) * std::sin(ray.theta));
+  return constants_of_motion_b(ray) * constants_of_motion_b(ray) * std::cos(ray.theta) / (parameters::radius * parameters::radius * std::sin(ray.theta) * std::sin(ray.theta) * std::sin(ray.theta));
 }
 
 double wormhole_radius(double length, double p /* should be a constant */) {
