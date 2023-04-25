@@ -3,13 +3,6 @@
 
 #include <cmath>
 
-/*
-  We need to use spherical coordinates:
-  - radial distance from a fixed origin (l in paper)
-  - polar angle
-  - azimuthal angle
- */
-
 template <typename T> struct Position {
   T x;
   T y;
@@ -23,13 +16,35 @@ Position<double> global_spherical_polar_basis(double dir_theta,
           .z = std::cos(dir_theta)};
 }
 
-struct RayParams {
-  double length;          // l
-  double polar_angle;     // theta
-  double azimuthal_angle; // phi
-};
+namespace parameters {
+inline constexpr double p = 1.0;
+inline constexpr double l = 1.0;
+inline constexpr double radius = std::sqrt((p * p) + (l * l));
+} // namespace parameters
 
-void update(RayParams &params) {}
+class Ray {
+public:
+  Ray(Position<double> camera_location, double camera_direction_theta,
+      double camera_direction_phi) {
+    const Position<double> unit_vector_N = global_spherical_polar_basis(
+        camera_direction_theta, camera_direction_phi);
+    p_l = -unit_vector_N.x;
+    p_theta = radius * unit_vector_N.z;
+    l = camera_location.x;
+    theta = camera_location.y;
+    phi = camera_location.z;
+  }
+
+  /* Camera position */
+  double l;     /* length */
+  double theta; /* polar angle */
+  double phi;   /* azimuthal angle */
+
+  /* Light ray's canoncial momenta */
+  double p_l;
+  double p_theta;
+  double p_phi;
+};
 
 double constants_of_motion_b() {}
 
