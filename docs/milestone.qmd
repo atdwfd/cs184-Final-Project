@@ -9,7 +9,9 @@ We have put together the formulas and equations for wormhole rendering, which is
 essential for our later implementation.
 
 # Preliminary Results 
-- N/A
+
+As we spent much of our time researching the physics behind wormholes and the
+rendering process, we do not yet have preliminary renderings to share. 
 
 # Reflect on progress relative to your plan
 We are a little bit behind schedule on our plan because of the decision to try
@@ -29,13 +31,25 @@ is also when we plan to create all final deliverables.
 Below are some implementation details that we will follow: 
 
 ## The ray equations 
-These five equations of the following quantities {l, θ, φ, pl, pθ} as a function
+
+These five equations of the following quantities $\{l, \theta, \phi, p_l, p_\theta\}$ as a function
 of t form the geodesic(ray), which guarantee the lateral part of each ray moves
 along a great circle.
+
+\begin{align}
+\frac{dl}{dt} &= p_l \notag \\
+\frac{d\theta}{dt} &= r^2 \notag \\
+\frac{d\phi}{dt} &= \frac{b}{r^2\sin^\theta} \notag \\
+\frac{dp_l}{dt} &= B^2 \frac{\frac{dr}{dl}}{r^3} \notag \\
+\frac{dp_\theta}{dt} &= \frac{b^2}{r^2}{\cos \theta}{\sin^3 \theta} \notag
+\end{align}
+
+
 ## Generating the map
-- Choose a camera location (lc, θc, φc)
+
+- Choose a camera location ($l_c$, $\theta_c$, $\phi_c$)
 - Set up local Cartesian coordinates centered on the camera according to the diagrams below. 
 - Set up a local spherical polar coordinate system based on A.9a.
-- Choose a direction (θcs, φcs) on the camera’s local sky
+- Choose a direction ($\theta_{cs}$, $\phi_{cs}$) on the camera’s local sky
 - Compute the incoming light ray’s canonical momenta using A.9c, and then compute the ray’s constants of motion using A.9d.
 - Put everything together. 
