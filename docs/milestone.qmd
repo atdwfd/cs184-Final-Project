@@ -1,0 +1,41 @@
+---
+title: "Milestone: Visualizing Theoretical Physics: Human Traversable Wormholes"
+author: "Ayah Abushama, Arturo Flores, Isolde Fang, Jakob Sorensen"
+---
+
+# Briefly summarize what you have accomplished
+
+We have put together the formulas and equations for wormhole rendering, which is
+essential for our later implementation.
+
+# Preliminary Results 
+- N/A
+
+# Reflect on progress relative to your plan
+We are a little bit behind schedule on our plan because of the decision to try
+switching over to project 4. Despite this, we feel good about our understanding
+of what needs to be implemented update your work plan as appropriate By the end
+of this week we plan to have written the majority of our code, and have a basic
+working implementation of the wormhole. Between the end of the week and the
+final due date, the goal is to fine tune our implementation, test it with
+different images, and observe and showcase the effect of using different
+variables.  Unfortunately, because of setbacks, it’s looking like we might not
+have time to implement our “hoping to deliver” dream, which entailed a
+simulation of one going through the rendered wormhole. We’ve also realized this
+might have been extremely difficult to create computationally, potentially
+requiring a dedicated GPU.  During the testing phase after the end of the week
+is also when we plan to create all final deliverables.
+
+Below are some implementation details that we will follow: 
+
+## The ray equations 
+These five equations of the following quantities {l, θ, φ, pl, pθ} as a function
+of t form the geodesic(ray), which guarantee the lateral part of each ray moves
+along a great circle.
+## Generating the map
+- Choose a camera location (lc, θc, φc)
+- Set up local Cartesian coordinates centered on the camera according to the diagrams below. 
+- Set up a local spherical polar coordinate system based on A.9a.
+- Choose a direction (θcs, φcs) on the camera’s local sky
+- Compute the incoming light ray’s canonical momenta using A.9c, and then compute the ray’s constants of motion using A.9d.
+- Put everything together. 
