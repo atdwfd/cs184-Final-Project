@@ -15,7 +15,7 @@ static constexpr auto translate_step(ShaderStep step) {
 }
 
 auto Shader::compile() -> bool {
-  auto gl_src = static_cast<const GLchar *>(src_.data());
+  auto gl_src = static_cast<const GLchar*>(src_.data());
 
   GLid = glCreateShader(translate_step(step_));
 
@@ -48,14 +48,12 @@ auto Shader::from_file(std::string_view file_path, ShaderStep step) -> Shader {
                 step};
 }
 
-auto ShaderProgram::attach(const Shader &shader) -> ShaderProgram & {
+auto ShaderProgram::attach(const Shader& shader) -> ShaderProgram& {
   glAttachShader(GLid, shader.GLid);
   return *this;
 }
 
-auto ShaderProgram::use() -> void {
-  glUseProgram(GLid);
-}
+auto ShaderProgram::use() -> void { glUseProgram(GLid); }
 
 auto ShaderProgram::link() -> bool {
   glLinkProgram(GLid);
@@ -67,4 +65,10 @@ auto ShaderProgram::link() -> bool {
     std::cerr << "[ERROR]: Shader failed to link: " << log.data() << '\n';
   }
   return success;
+}
+
+auto ShaderProgram::set_texture_uniform(const Texture& texture,
+                                        std::string_view uniform_name) -> void {
+  const auto loc = glGetUniformLocation(GLid, uniform_name.data());
+  glUniform1i(loc, texture.texture_unit());
 }

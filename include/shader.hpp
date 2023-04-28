@@ -5,13 +5,8 @@
 #include <string>
 #include <string_view>
 
-#include <glad/gl.h>
-
-namespace detail {
-struct GLObject {
-  GLuint GLid;
-};
-} // namespace detail
+#include "detail/globject.hpp"
+#include "texture.hpp"
 
 enum class ShaderStep { Vertex, Fragment };
 
@@ -22,8 +17,8 @@ public:
   Shader(std::string src, ShaderStep step);
 
   Shader() = delete;
-  Shader(const Shader &) = delete;
-  Shader(Shader &&) = delete;
+  Shader(const Shader&) = delete;
+  Shader(Shader&&) = delete;
 
   /* Attempt to compile the shader. Returns whether it was successful.
     Compilation errors printed to STDERR. */
@@ -44,17 +39,20 @@ class ShaderProgram : private detail::GLObject {
 public:
   ShaderProgram() : detail::GLObject{glCreateProgram()} {}
 
-  ShaderProgram(const ShaderProgram &) = delete;
-  ShaderProgram(ShaderProgram &&) = delete;
+  ShaderProgram(const ShaderProgram&) = delete;
+  ShaderProgram(ShaderProgram&&) = delete;
 
   /* Attach the shader to the program. */
-  auto attach(const Shader &shader) -> ShaderProgram &;
+  auto attach(const Shader& shader) -> ShaderProgram&;
 
   /* Link the program. */
   auto link() -> bool;
 
   /* Use (activate) the program. */
   auto use() -> void;
+
+  auto set_texture_uniform(const Texture& texture,
+                           std::string_view uniform_name) -> void;
 };
 
 #endif /* WORMHOLE_SHADER_HPP__ */
