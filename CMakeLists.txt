@@ -8,6 +8,7 @@ add_subdirectory("./libs/glad/")
 set(
   SOURCES
   "./src/main.cpp"
+  "./src/shader.cpp"
   # To add more...
 )
 

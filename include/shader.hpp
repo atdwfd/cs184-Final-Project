@@ -48,6 +48,9 @@ public:
 
   /* Link the program. */
   auto link() -> bool;
+
+  /* Use (activate) the program. */
+  auto use() -> void;
 };
 
 #endif /* WORMHOLE_SHADER_HPP__ */

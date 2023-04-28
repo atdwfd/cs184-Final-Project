@@ -16,16 +16,23 @@ static constexpr auto translate_step(ShaderStep step) {
 
 auto Shader::compile() -> bool {
   const auto gl_src = static_cast<const GLchar *>(src_.data());
-  const auto gl_size = static_cast<GLint>(src_.size());
 
   GLid = glCreateShader(translate_step(step_));
-  glShaderSource(GLid, 1, &gl_src, &gl_size);
+
+  if (GLid == 0) {
+    std::cerr << "[ERROR]: Failed to create shader\n";
+    return false;
+  }
+
+  glShaderSource(GLid, 1, &gl_src, nullptr);
 
   GLint success;
   glGetShaderiv(GLid, GL_COMPILE_STATUS, &success);
   if (!success) {
     std::array<char, 512> log{};
-    glGetShaderInfoLog(GLid, sizeof(log), nullptr, log.data());
+    int log_size;
+    glGetShaderInfoLog(GLid, log.size(), &log_size, log.data());
+    std::cout << "Log size: " << log_size << '\n';
     std::cerr << "[ERROR]: Shader failed to compile: " << log.data() << '\n';
   }
   return success;
@@ -45,6 +52,10 @@ auto Shader::from_file(std::string_view file_path, ShaderStep step) -> Shader {
 auto ShaderProgram::attach(const Shader &shader) -> ShaderProgram & {
   glAttachShader(GLid, translate_step(shader.step()));
   return *this;
+}
+
+auto ShaderProgram::use() -> void {
+  glUseProgram(GLid);
 }
 
 auto ShaderProgram::link() -> bool {
