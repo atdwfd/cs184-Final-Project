@@ -19,6 +19,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glad glfw)
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} include)
 
 
