@@ -78,7 +78,7 @@ auto main(int argc, char **argv) -> int {
     auto fragment_shader = Shader::from_file("../resources/shaders/fragment.glsl", ShaderStep::Fragment);
     fragment_shader.compile();
     if (!program.attach(vertex_shader).attach(fragment_shader).link()) {
-      std::cerr << "[ERROR]: Failed to link shader program.\n";
+      return -1;
     }
   }
 

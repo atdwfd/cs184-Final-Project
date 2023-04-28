@@ -15,7 +15,7 @@ static constexpr auto translate_step(ShaderStep step) {
 }
 
 auto Shader::compile() -> bool {
-  const auto gl_src = static_cast<const GLchar *>(src_.data());
+  auto gl_src = static_cast<const GLchar *>(src_.data());
 
   GLid = glCreateShader(translate_step(step_));
 
@@ -25,14 +25,13 @@ auto Shader::compile() -> bool {
   }
 
   glShaderSource(GLid, 1, &gl_src, nullptr);
+  glCompileShader(GLid);
 
   GLint success;
   glGetShaderiv(GLid, GL_COMPILE_STATUS, &success);
   if (!success) {
     std::array<char, 512> log{};
-    int log_size;
-    glGetShaderInfoLog(GLid, log.size(), &log_size, log.data());
-    std::cout << "Log size: " << log_size << '\n';
+    glGetShaderInfoLog(GLid, log.size(), nullptr, log.data());
     std::cerr << "[ERROR]: Shader failed to compile: " << log.data() << '\n';
   }
   return success;
@@ -50,7 +49,7 @@ auto Shader::from_file(std::string_view file_path, ShaderStep step) -> Shader {
 }
 
 auto ShaderProgram::attach(const Shader &shader) -> ShaderProgram & {
-  glAttachShader(GLid, translate_step(shader.step()));
+  glAttachShader(GLid, shader.GLid);
   return *this;
 }
 
@@ -62,5 +61,10 @@ auto ShaderProgram::link() -> bool {
   glLinkProgram(GLid);
   GLint success;
   glGetProgramiv(GLid, GL_LINK_STATUS, &success);
+  if (!success) {
+    std::array<char, 512> log{};
+    glGetProgramInfoLog(GLid, log.size(), nullptr, log.data());
+    std::cerr << "[ERROR]: Shader failed to link: " << log.data() << '\n';
+  }
   return success;
 }

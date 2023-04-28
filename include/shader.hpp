@@ -15,6 +15,8 @@ struct GLObject {
 
 enum class ShaderStep { Vertex, Fragment };
 
+class ShaderProgram;
+
 class Shader : private detail::GLObject {
 public:
   Shader(std::string src, ShaderStep step);
@@ -30,6 +32,8 @@ public:
   inline auto step() const -> ShaderStep { return step_; }
 
   static auto from_file(std::string_view file_path, ShaderStep step) -> Shader;
+
+  friend ShaderProgram;
 
 private:
   std::string src_;
