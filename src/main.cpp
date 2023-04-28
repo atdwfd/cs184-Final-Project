@@ -37,8 +37,13 @@ auto main(int argc, char **argv) -> int {
     std::cout << "Using default resolution: " << default_screen_width << " x "
               << default_screen_height << '\n';
   }
-  /* TODO: Allow user to provide resolution themselves. */
 
+  /* TODO: Allow user to provide resolution themselves. */  
+
+  glfwSetErrorCallback([](int error, const char* description) {
+    std::cout << "[ERROR-GLFW(" << error << ")]: " << description << '\n';
+  });
+  
   if (!glfwInit()) {
     std::cerr << "[ERROR]: Failed to initialize GLFW.\n";
     return -1;
