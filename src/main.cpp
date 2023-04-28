@@ -18,8 +18,18 @@ constexpr int default_screen_width = 800;
 constexpr int default_screen_height = 600;
 constexpr const char *window_title = "Visualizing Wormholes";
 
-enum class ShaderStep { Vertex, Fragment };
+/* We render two triangles (a rectangle) that cover the entire screen
+   as we're rendering a single image. */
+constexpr float image_vertices[] = {
+    // Positions         // Texture Coords
+    -1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+     1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
 
+     1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+     1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+    -1.0f,  1.0f, 0.0f,  0.0f, 1.0f
+};
 
 auto main(int argc, char **argv) -> int {
 
