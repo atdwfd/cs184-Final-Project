@@ -54,6 +54,12 @@ auto main(int argc, char **argv) -> int {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, opengl_version_major);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, opengl_version_minor);
 
+  /* For MacOS compatability. */
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  
+  
+
   std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> window{
       glfwCreateWindow(default_screen_width, default_screen_height,
                        window_title, nullptr, nullptr),
