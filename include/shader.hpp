@@ -51,6 +51,7 @@ public:
   /* Use (activate) the program. */
   auto use() -> void;
 
+  /* Set a texture uniform using TEXTURE with name UNIFORM_NAME. */
   auto set_texture_uniform(const Texture& texture,
                            std::string_view uniform_name) -> void;
 };

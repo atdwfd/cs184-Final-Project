@@ -58,33 +58,33 @@ auto Texture::from_file(std::string_view file_path) -> Texture {
 
 static auto translate(int texture_unit) -> GLenum {
   switch (texture_unit) {
-  case 0:
-    return GL_TEXTURE0;
-  case 1:
-    return GL_TEXTURE1;
-  case 2:
-    return GL_TEXTURE2;
-  case 3:
-    return GL_TEXTURE3;
-  case 4:
-    return GL_TEXTURE4;
-  case 5:
-    return GL_TEXTURE5;
-  case 6:
-    return GL_TEXTURE6;
-  case 7:
-    return GL_TEXTURE7;
-  case 8:
-    return GL_TEXTURE8;
-  case 9:
-    return GL_TEXTURE9;
-  default:
-    throw std::out_of_range("Texture unit index out of range [0, 9]");    
+    case 0:
+      return GL_TEXTURE0;
+    case 1:
+      return GL_TEXTURE1;
+    case 2:
+      return GL_TEXTURE2;
+    case 3:
+      return GL_TEXTURE3;
+    case 4:
+      return GL_TEXTURE4;
+    case 5:
+      return GL_TEXTURE5;
+    case 6:
+      return GL_TEXTURE6;
+    case 7:
+      return GL_TEXTURE7;
+    case 8:
+      return GL_TEXTURE8;
+    case 9:
+      return GL_TEXTURE9;
+    default:
+      throw std::out_of_range("Texture unit index out of range [0, 9]");
   }
 }
 
 auto Texture::bind(int texture_unit) -> void {
   glActiveTexture(translate(texture_unit));
   glBindTexture(GL_TEXTURE_2D, GLid);
-  texture_unit_= texture_unit;
+  texture_unit_ = texture_unit;
 }
