@@ -106,7 +106,7 @@ auto main(int argc, char **argv) -> int {
     program.use();
     glBindVertexArray(VAO);
     
-    glDrawArrays(GL_TRIANGLES, 0, 4);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glfwSwapBuffers(window.get());
     glfwPollEvents();
