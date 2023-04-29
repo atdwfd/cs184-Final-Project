@@ -8,6 +8,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <glm/glm.hpp>
+
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -118,6 +120,7 @@ auto main(int argc, char** argv) -> int {
   auto texture = Texture::from_file("../resources/textures/container.jpg");
   texture.bind(0);
   program.set_texture_uniform(texture, "texture0");
+  program.set_uniform("i_resolution", glm::vec2{800.0f, 600.f});
 
   while (!glfwWindowShouldClose(window.get())) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

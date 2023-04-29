@@ -69,6 +69,5 @@ auto ShaderProgram::link() -> bool {
 
 auto ShaderProgram::set_texture_uniform(const Texture& texture,
                                         std::string_view uniform_name) -> void {
-  const auto loc = glGetUniformLocation(GLid, uniform_name.data());
-  glUniform1i(loc, texture.texture_unit());
+  set_uniform(uniform_name, texture.texture_unit());
 }
