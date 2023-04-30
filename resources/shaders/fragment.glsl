@@ -8,17 +8,17 @@ uniform vec3 i_camera_pos;
 /* Wormhole parameters. */
 uniform float p;
 uniform float l;
-uniform float radius;
-uniform float M;
 
 in vec2 frag_tex_coord;
 
 out vec4 color;
 
 const float PI = 3.14159265359;
-const float STEP_SIZE = -0.01;
+const float STEP_SIZE = 0.1;
 const float FOV = 60.0;
 const float T_THRESHOLD = -1000; // We start at 0 and descend to this value.
+const float M = 2 * 10^30;
+const float rho = 4 * 10^30;
 
 struct Ray {
   /* Camera position. */
@@ -51,6 +51,10 @@ float constants_drdl(Ray ray) {
   return (2.0 / PI) * atan(2 * ray.l / (PI * M));  
 }  
 
+float constants_radius(Ray ray){
+  return sqrt(rho * rho + ray.l * ray.l);
+}
+
 /* ----- Derivatives. ----- */
 
 float delta_l(Ray ray) {
@@ -58,32 +62,33 @@ float delta_l(Ray ray) {
 }
 
 float delta_theta(Ray ray) {
-  return ray.p_theta / (radius * radius);
+  return ray.p_theta / (constants_radius(ray) * constants_radius(ray));
 }
 
 float delta_phi(Ray ray) {
-  return constants_of_motion_b(ray) / (radius * radius * radius * sin(ray.theta) * sin(ray.theta));
+  return constants_of_motion_b(ray) / (constants_radius(ray) * constants_radius(ray) * constants_radius(ray) * sin(ray.theta) * sin(ray.theta));
 }
 
 float delta_p_l(Ray ray) {
   float B2 = constants_of_motion_B2(ray);
-  return B2 * B2 * constants_drdl(ray) / (radius * radius * radius);
+  return B2 * B2 * constants_drdl(ray) / (constants_radius(ray) * constants_radius(ray) * constants_radius(ray));
 }
 
 float delta_p_theta(Ray ray) {
   float b = constants_of_motion_b(ray);
   float sin_theta = sin(ray.theta);
-  return b * b * cos(ray.theta) / (radius * radius * radius * sin_theta * sin_theta);
+  return b * b * cos(ray.theta) / (constants_radius(ray) * constants_radius(ray) * constants_radius(ray) * sin_theta * sin_theta);
 }  
 
 Ray initial_ray(vec3 camera_dir) {
   Ray ray;
   vec3 unit_vector_N = global_spherical_polar_basis(camera_dir.yz);
   ray.p_l = -unit_vector_N.x;
-  ray.p_theta = radius * unit_vector_N.z;
+  ray.p_theta = constants_radius(ray) * unit_vector_N.z;
   ray.l = i_camera_pos.x;
   ray.theta = i_camera_pos.y;
   ray.phi = i_camera_pos.z;
+  ray.p_phi = constants_radius(ray) * sin(ray.theta) * -unit_vector_N.y;
   return ray;
 }
 
