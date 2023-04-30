@@ -60,9 +60,9 @@ public:
   /* Use (activate) the program. */
   auto use() -> void;
 
+
   template <Uniform U>
-  auto set_uniform(std::string_view uniform_name, const U &value) -> void {
-    const auto loc = glGetUniformLocation(GLid, uniform_name.data());
+  auto set_uniform(int loc, const U& value) -> void {
     if constexpr (std::is_same_v<U, int>) {
       glUniform1i(loc, value);
     } else if constexpr (std::is_same_v<U, float>) {
@@ -81,6 +81,15 @@ public:
       glUniformMatrix4fv(loc, 1, GL_FALSE, &value[0][0]);
     }
   }
+
+  template <Uniform U>
+  auto set_uniform(std::string_view uniform_name, const U &value) -> int {
+    const auto loc = glGetUniformLocation(GLid, uniform_name.data());
+    set_uniform(loc, value);
+    return loc;
+  }
+
+  // TODO: overload set_uniform to include texture
 
   /* Set a texture uniform using TEXTURE with name UNIFORM_NAME. */
   auto set_texture_uniform(const Texture &texture,

@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <numbers>
 #include <string>
 #include <string_view>
 
@@ -23,7 +24,7 @@ constexpr int opengl_version_major = 3;
 constexpr int opengl_version_minor = 3;
 constexpr int default_screen_width = 800;
 constexpr int default_screen_height = 600;
-constexpr const char* window_title = "Visualizing Wormholes";
+constexpr const char *window_title = "Visualizing Wormholes";
 
 /* We render two triangles (a rectangle) that cover the entire screen
    as we're rendering a single image. */
@@ -37,7 +38,7 @@ constexpr float image_vertices[] = {
     1.0f,  1.0f,  -1.0f, 1.0f,  0.0f, 0.0f,  1.0f};
 // clang-format on
 
-auto main(int argc, char** argv) -> int {
+auto main(int argc, char **argv) -> int {
   if (argc == 1) {
     std::cout << "Using default resolution: " << default_screen_width << " x "
               << default_screen_height << '\n';
@@ -45,7 +46,7 @@ auto main(int argc, char** argv) -> int {
 
   /* TODO: Allow user to provide resolution themselves. */
 
-  glfwSetErrorCallback([](int error, const char* description) {
+  glfwSetErrorCallback([](int error, const char *description) {
     std::cout << "[ERROR-GLFW(" << error << ")]: " << description << '\n';
   });
 
@@ -78,7 +79,7 @@ auto main(int argc, char** argv) -> int {
   /* Initialize GLAD. */
 
   gladLoadGL(glfwGetProcAddress);
-  const GLubyte* version = glGetString(GL_VERSION);
+  const GLubyte *version = glGetString(GL_VERSION);
   std::cout << "OpenGL version available: " << version << '\n';
 
   /* Load shaders, create program. */
@@ -110,17 +111,20 @@ auto main(int argc, char** argv) -> int {
                GL_STATIC_DRAW);
 
   // Position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
   // Texture coordinate attribute
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                        (void*)(3 * sizeof(float)));
+                        (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   auto texture = Texture::from_file("../resources/textures/container.jpg");
   texture.bind(0);
   program.set_texture_uniform(texture, "texture0");
   program.set_uniform("i_resolution", glm::vec2{800.0f, 600.f});
+  program.set_uniform("i_camera_pos",
+                      glm::vec3{0.0, std::numbers::pi / 2.0, 0.0});
+  
 
   while (!glfwWindowShouldClose(window.get())) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

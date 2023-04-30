@@ -14,13 +14,18 @@ static constexpr auto translate_step(ShaderStep step) {
   return step == ShaderStep::Vertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
 }
 
+static constexpr auto step_to_string(ShaderStep step) {
+  return step == ShaderStep::Vertex ? "Vertex" : "Fragment";
+}
+
 auto Shader::compile() -> bool {
-  auto gl_src = static_cast<const GLchar*>(src_.data());
+  auto gl_src = static_cast<const GLchar *>(src_.data());
 
   GLid = glCreateShader(translate_step(step_));
 
   if (GLid == 0) {
-    std::cerr << "[ERROR]: Failed to create shader\n";
+    std::cerr << "[ERROR]: Failed to create " << step_to_string(step_)
+              << " Shader\n";
     return false;
   }
 
@@ -32,7 +37,8 @@ auto Shader::compile() -> bool {
   if (!success) {
     std::array<char, 512> log{};
     glGetShaderInfoLog(GLid, log.size(), nullptr, log.data());
-    std::cerr << "[ERROR]: Shader failed to compile: " << log.data() << '\n';
+    std::cerr << "[ERROR]: " << step_to_string(step_)
+              << " Shader failed to compile: " << log.data() << '\n';
   }
   return success;
 }
@@ -48,7 +54,7 @@ auto Shader::from_file(std::string_view file_path, ShaderStep step) -> Shader {
                 step};
 }
 
-auto ShaderProgram::attach(const Shader& shader) -> ShaderProgram& {
+auto ShaderProgram::attach(const Shader &shader) -> ShaderProgram & {
   glAttachShader(GLid, shader.GLid);
   return *this;
 }
@@ -67,7 +73,7 @@ auto ShaderProgram::link() -> bool {
   return success;
 }
 
-auto ShaderProgram::set_texture_uniform(const Texture& texture,
+auto ShaderProgram::set_texture_uniform(const Texture &texture,
                                         std::string_view uniform_name) -> void {
   set_uniform(uniform_name, texture.texture_unit());
 }
