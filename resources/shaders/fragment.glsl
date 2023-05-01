@@ -5,20 +5,17 @@ uniform sampler2D texture1;
 uniform vec2 i_resolution;
 uniform vec3 i_camera_pos;
 
-/* Wormhole parameters. */
-uniform float p;
-uniform float l;
-
 in vec2 frag_tex_coord;
 
 out vec4 color;
 
 const float PI = 3.14159265359;
-const float STEP_SIZE = 0.1;
+const float STEP_SIZE = 10000.0;
 const float FOV = 60.0;
-const float T_THRESHOLD = -1000; // We start at 0 and descend to this value.
-const float M = 2 * 10^30;
-const float rho = 4 * 10^30;
+const float T_THRESHOLD = -1000000000.0; // We start at 0 and descend to this value.
+const float M = 2.0e30;
+const float rho = 4.0e10;
+const float a = rho / 10.0;
 
 struct Ray {
   /* Camera position. */
@@ -44,15 +41,22 @@ float constants_of_motion_b(Ray ray) {
 }
 
 float constants_of_motion_B2(Ray ray) {
-  return ray.p_theta * ray.p_theta + (ray.p_phi * ray.p_phi) / (sin(ray.theta) * sin(ray.theta));
+  float sin_theta = sin(ray.theta);
+  return ray.p_theta * ray.p_theta + (ray.p_phi * ray.p_phi) / (sin_theta * sin_theta);
 }
 
 float constants_drdl(Ray ray) {
-  return (2.0 / PI) * atan(2 * ray.l / (PI * M));  
+  return (2.0 / PI) * atan(2.0 * ray.l / (PI * M));  
 }  
 
 float constants_radius(Ray ray){
-  return sqrt(rho * rho + ray.l * ray.l);
+  float abs_l = ray.l;
+  if (abs_l > a) {
+    float x = 2.0 * (abs(ray.l) - a) / (PI * M);
+    return rho + M * (x * atan(x) - 0.5 * log(1.0 + x * x));
+  } else {
+    return rho;
+  }
 }
 
 /* ----- Derivatives. ----- */
@@ -66,18 +70,23 @@ float delta_theta(Ray ray) {
 }
 
 float delta_phi(Ray ray) {
-  return constants_of_motion_b(ray) / (constants_radius(ray) * constants_radius(ray) * constants_radius(ray) * sin(ray.theta) * sin(ray.theta));
+  float b = constants_of_motion_b(ray);
+  float r = constants_radius(ray);
+  float sin_theta = sin(ray.theta);
+  return b / (r * r * sin_theta * sin_theta);
 }
 
 float delta_p_l(Ray ray) {
   float B2 = constants_of_motion_B2(ray);
-  return B2 * B2 * constants_drdl(ray) / (constants_radius(ray) * constants_radius(ray) * constants_radius(ray));
+  float r = constants_radius(ray);
+  return B2 * B2 * constants_drdl(ray) / (r * r * r);
 }
 
 float delta_p_theta(Ray ray) {
   float b = constants_of_motion_b(ray);
   float sin_theta = sin(ray.theta);
-  return b * b * cos(ray.theta) / (constants_radius(ray) * constants_radius(ray) * constants_radius(ray) * sin_theta * sin_theta);
+  float r = constants_radius(ray);
+  return b * b * cos(ray.theta) / (r * r  * sin_theta * sin_theta * sin_theta);
 }  
 
 Ray initial_ray(vec3 camera_dir) {
@@ -120,7 +129,7 @@ vec3 camera_direction() {
 }
 
 void integrate_geodesic(inout Ray ray) {
-  for (float t = 0; t >= T_THRESHOLD; t -= STEP_SIZE) {
+  for (float t = 0.0; t >= T_THRESHOLD; t -= STEP_SIZE) {
     ray_take_step(ray);
   }
 }  
@@ -129,14 +138,13 @@ void integrate_geodesic(inout Ray ray) {
 // celestial sphere and another color if it hits the other. 
 
 void main() {
-//  color = texture(texture0, frag_tex_coord);
   const vec4 red = vec4(1.0, 0.0, 0.0, 1.0);
   const vec4 blue = vec4(0.0, 0.0, 1.0, 1.0);
   Ray ray = initial_ray(camera_direction());
   integrate_geodesic(ray);
   // get the intersection point on the sphere.
-  if (ray.l < 0) {
-    color = red;
+  if (ray.l < 0.0) {
+    color = red; 
     // saturn side 
   }
   else {

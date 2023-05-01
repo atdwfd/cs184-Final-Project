@@ -127,6 +127,7 @@ auto main(int argc, char **argv) -> int {
   
 
   while (!glfwWindowShouldClose(window.get())) {
+    
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -137,5 +138,7 @@ auto main(int argc, char **argv) -> int {
 
     glfwSwapBuffers(window.get());
     glfwPollEvents();
+
+    sleep(20);
   }
 }
