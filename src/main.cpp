@@ -19,6 +19,7 @@
 
 #include "shader.hpp"
 #include "texture.hpp"
+#include "simulate.hpp"
 
 constexpr int opengl_version_major = 3;
 constexpr int opengl_version_minor = 3;
@@ -124,8 +125,17 @@ auto main(int argc, char **argv) -> int {
   program.set_uniform("i_resolution", glm::vec2{800.0f, 600.f});
   program.set_uniform("i_camera_pos",
                       glm::vec3{0.0, std::numbers::pi / 2.0, 0.0});
-  
 
+
+
+  for (int i = 0; i < 1/*default_screen_width*/; ++i) {
+    for (int j = 0; j < 1/*default_screen_height*/; ++j) {
+      auto color = simulate(vec2(static_cast<float>(i), static_cast<float>(j)));
+      std::cout << "color at " << i << ", " << j << ": (" << color.r << ", " << color.g << ", " << color.b << ")\n";
+    }
+  }
+
+  /*
   while (!glfwWindowShouldClose(window.get())) {
     
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -141,4 +151,5 @@ auto main(int argc, char **argv) -> int {
 
     sleep(20);
   }
+  */
 }

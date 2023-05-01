@@ -15,7 +15,7 @@ const float FOV = 60.0;
 const float T_THRESHOLD = -1000000000.0; // We start at 0 and descend to this value.
 const float M = 2.0e30;
 const float rho = 4.0e10;
-const float a = rho / 10.0;
+const float a = 10.0; //rho / 10.0;
 
 struct Ray {
   /* Camera position. */
@@ -79,6 +79,7 @@ float delta_phi(Ray ray) {
 float delta_p_l(Ray ray) {
   float B2 = constants_of_motion_B2(ray);
   float r = constants_radius(ray);
+  float drdl = constants_drdl(ray);
   return B2 * B2 * constants_drdl(ray) / (r * r * r);
 }
 
@@ -91,11 +92,15 @@ float delta_p_theta(Ray ray) {
 
 Ray initial_ray(vec3 camera_dir) {
   Ray ray;
-  vec3 unit_vector_N = global_spherical_polar_basis(camera_dir.yz);
+  vec3 cart_to_spherical = vec3(length(camera_dir), acos(camera_dir.z / length(camera_dir)), atan(camera_dir.y, camera_dir.x));
+  vec3 unit_vector_N = global_spherical_polar_basis(cart_to_spherical.yz);  
+//  vec3 unit_vector_N = global_spherical_polar_basis(camera_dir.yz);
 
   ray.l = i_camera_pos.x;
   ray.theta = i_camera_pos.y;
   ray.phi = i_camera_pos.z;
+
+  unit_vector_N = normalize(unit_vector_N);
   
   ray.p_l = -unit_vector_N.x;
   ray.p_theta = constants_radius(ray) * unit_vector_N.z;
@@ -119,6 +124,13 @@ void ray_take_step(inout Ray ray) {
   ray.p_theta = take_step(ray.p_theta, delta_p_theta(ray_cpy));
 }
 
+vec3 rand() {
+  vec3 random = vec3(fract(sin(dot(gl_FragCoord.xyz + vec3(0.0, 1.0, 2.0), vec3(12.9898, 78.233, 45.5432))) * 43758.5453),
+                   fract(sin(dot(gl_FragCoord.xyz + vec3(3.0, 4.0, 5.0), vec3(12.9898, 78.233, 45.5432))) * 43758.5453),
+                   fract(sin(dot(gl_FragCoord.xyz + vec3(6.0, 7.0, 8.0), vec3(12.9898, 78.233, 45.5432))) * 43758.5453));
+  return random;
+}
+
 /*
   As a simplification, we take that the camera and image plane are sufficiently
   far from the wormhole so that the ray would not be bent before reaching the
@@ -127,7 +139,7 @@ void ray_take_step(inout Ray ray) {
 vec3 camera_direction() {
   vec2 normalized_coords = (gl_FragCoord.xy - i_resolution * 0.5) / min(i_resolution.x, i_resolution.y);
   const float tan_half_fov = tan(radians(FOV) * 0.5);
-  vec3 direction = vec3(normalized_coords * tan_half_fov, -1.0);
+  vec3 direction = vec3(normalized_coords * tan_half_fov, 1.0);
   return normalize(direction);
 }
 
