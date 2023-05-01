@@ -92,12 +92,15 @@ float delta_p_theta(Ray ray) {
 Ray initial_ray(vec3 camera_dir) {
   Ray ray;
   vec3 unit_vector_N = global_spherical_polar_basis(camera_dir.yz);
-  ray.p_l = -unit_vector_N.x;
-  ray.p_theta = constants_radius(ray) * unit_vector_N.z;
+
   ray.l = i_camera_pos.x;
   ray.theta = i_camera_pos.y;
   ray.phi = i_camera_pos.z;
+  
+  ray.p_l = -unit_vector_N.x;
+  ray.p_theta = constants_radius(ray) * unit_vector_N.z;
   ray.p_phi = constants_radius(ray) * sin(ray.theta) * -unit_vector_N.y;
+  
   return ray;
 }
 
