@@ -50,7 +50,7 @@ float constants_drdl(Ray ray) {
 }  
 
 float constants_radius(Ray ray){
-  float abs_l = ray.l;
+  float abs_l = abs(ray.l);
   if (abs_l > a) {
     float x = 2.0 * (abs(ray.l) - a) / (PI * M);
     return rho + M * (x * atan(x) - 0.5 * log(1.0 + x * x));
