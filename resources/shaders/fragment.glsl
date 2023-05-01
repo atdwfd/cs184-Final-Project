@@ -105,7 +105,7 @@ Ray initial_ray(vec3 camera_dir) {
 }
 
 float take_step(float curr_val, float delta) {
-  return curr_val + delta * STEP_SIZE;
+  return curr_val - delta * STEP_SIZE;
 }
 
 void ray_take_step(inout Ray ray) {
@@ -145,7 +145,6 @@ void main() {
   const vec4 blue = vec4(0.0, 0.0, 1.0, 1.0);
   Ray ray = initial_ray(camera_direction());
   integrate_geodesic(ray);
-  // get the intersection point on the sphere.
   if (ray.l < 0.0) {
     color = red; 
     // saturn side 
