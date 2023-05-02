@@ -1,0 +1,29 @@
+---
+title: "Milestone: Visualizing Theoretical Physics: Human Traversable Wormholes"
+author: "Ayah Abushama, Arturo Flores, Isolde Fang, Jakob Sorensen"
+---
+
+# Abstract
+
+TODO 
+
+-A paragraph summary of the entire project-
+
+# Technical approach
+
+TODO 
+
+-A 1-2 page summary of your technical approach, techniques used, algorithms implemented, etc. (use references to papers or other resources for further detail). Highlight how your approach varied from the references used (did you implement a subset, or did you change or enhance anything), the unique decisions you made and why.
+-A description of problems encountered and how you tackled them.
+-A description of lessons learned.
+
+# Results
+
+TODO
+
+-Your final images, animations, video of your system (whichever is relevant). You can include results that you think show off what you built but that you did not have time to go over on presentation day.
+
+# References
+
+
+# Contributions from each team member
