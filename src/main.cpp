@@ -128,14 +128,14 @@ auto main(int argc, char **argv) -> int {
 
 
 
-  for (int i = 0; i < 1/*default_screen_width*/; ++i) {
-    for (int j = 0; j < 1/*default_screen_height*/; ++j) {
+  for (int i = 0; i < 1; ++i) {
+    for (int j = 0; j < 1; ++j) {
       auto color = simulate(vec2(static_cast<float>(i), static_cast<float>(j)));
       std::cout << "color at " << i << ", " << j << ": (" << color.r << ", " << color.g << ", " << color.b << ")\n";
     }
   }
-
   /*
+
   while (!glfwWindowShouldClose(window.get())) {
     
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -152,4 +152,5 @@ auto main(int argc, char **argv) -> int {
     sleep(20);
   }
   */
+
 }
