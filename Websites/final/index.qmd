@@ -5,9 +5,7 @@ author: "Ayah Abushama, Arturo Flores, Isolde Fang, Jakob Sorensen"
 
 # Abstract
 
-TODO 
-
--A paragraph summary of the entire project-
+The movie 'Interstellar' was the inspiration behind this project. In it, we see a visualization of something difficult to fathom: the bending of space and time itself through a wormhole. A wormhole is the point in which two separate points in a spacetime meet. In its simplest form, it can be visualized as a straw or tunnel where each entry point is a different area in space, time or both. Our project initially sought to expand upon project 3, in which rays travel in a continuous straight line, to implement the visual distortion of space and time in a simulation. After discussion, we realized for the sake of simplicity it would be more efficient to assume a ray is straight up until it hits the wormhole. Essentially, we treated the wormhole distortion as a shader that built upon project 4.
 
 # Technical approach
 
@@ -24,6 +22,9 @@ TODO
 -Your final images, animations, video of your system (whichever is relevant). You can include results that you think show off what you built but that you did not have time to go over on presentation day.
 
 # References
-
+    https://en.m.wikipedia.org/wiki/Wormhole
+    https://arxiv.org/pdf/1502.03809.pdf
+    http://authors.library.caltech.edu/9262/1/MORprl88.pdf
+    https://www.spacetimetravel.org/wurmlochflug
 
 # Contributions from each team member
