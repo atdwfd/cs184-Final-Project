@@ -18,14 +18,17 @@
 #include <string_view>
 
 #include "shader.hpp"
-#include "texture.hpp"
 #include "simulate.hpp"
+#include "texture.hpp"
 
 constexpr int opengl_version_major = 3;
 constexpr int opengl_version_minor = 3;
 constexpr int default_screen_width = 800;
 constexpr int default_screen_height = 600;
 constexpr const char *window_title = "Visualizing Wormholes";
+
+/* Set to true to run the C++ version of the simulation. */
+constexpr bool simulate_mode = false;
 
 /* We render two triangles (a rectangle) that cover the entire screen
    as we're rendering a single image. */
@@ -126,31 +129,30 @@ auto main(int argc, char **argv) -> int {
   program.set_uniform("i_camera_pos",
                       glm::vec3{0.0, std::numbers::pi / 2.0, 0.0});
 
+  if (simulate_mode) {
+    for (int i = 0; i < 1; ++i) {
+      for (int j = 0; j < 1; ++j) {
+        auto color =
+            simulate(vec2(static_cast<float>(i), static_cast<float>(j)));
+        std::cout << "color at " << i << ", " << j << ": (" << color.r << ", "
+                  << color.g << ", " << color.b << ")\n";
+      }
+    }
+  } else {
+    while (!glfwWindowShouldClose(window.get())) {
 
+      glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
 
-  for (int i = 0; i < 1; ++i) {
-    for (int j = 0; j < 1; ++j) {
-      auto color = simulate(vec2(static_cast<float>(i), static_cast<float>(j)));
-      std::cout << "color at " << i << ", " << j << ": (" << color.r << ", " << color.g << ", " << color.b << ")\n";
+      program.use();
+      glBindVertexArray(VAO);
+
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+
+      glfwSwapBuffers(window.get());
+      glfwPollEvents();
+
+      sleep(20);
     }
   }
-  /*
-
-  while (!glfwWindowShouldClose(window.get())) {
-    
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    program.use();
-    glBindVertexArray(VAO);
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glfwSwapBuffers(window.get());
-    glfwPollEvents();
-
-    sleep(20);
-  }
-  */
-
 }

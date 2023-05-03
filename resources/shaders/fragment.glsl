@@ -10,18 +10,21 @@ in vec2 frag_tex_coord;
 out vec4 color;
 
 const float PI = 3.14159265359;
-const float STEP_SIZE = 10000.0;
+const float STEP_SIZE = 1000.0;
 const float FOV = 60.0;
-const float T_THRESHOLD = -1000000000.0; // We start at 0 and descend to this value.
-const float M = 2.0e30;
-const float rho = 4.0e10;
-const float a = 10.0; //rho / 10.0;
+const float T_THRESHOLD = -10e7; // We start at 0 and descend to this value.
+const float rho = 1.3; //4.0e10;
+const float W = 0.05 * rho;
+const float a = 0.5 * rho;
+const float M = W / 1.42953;
+//const float M = 2.0e30;
+//const float rho = 4.0e10;
+//const float a = 10.0; //rho / 10.0;
 
 struct ConstantsOfMotion {
     float b;
     float B2;
 };
-
 
 struct Ray {
   /* Position. */
@@ -55,7 +58,15 @@ float constantsOfMotion_B2(Ray ray) {
 }
 
 float constants_drdl(Ray ray) {
-  return (2.0 / PI) * atan(2.0 * ray.l / (PI * M));  
+    float result;
+    if (abs(ray.l) > a) {
+        result = (2.0 * atan((2.0 * (-a + abs(ray.l))) / (M * 3.14159265)) * sign(ray.l)) / 3.14159265;
+    } else {
+        result = 0.0;
+    }
+
+    return result;
+//  return (2.0 / PI) * atan(2.0 * ray.l / (PI * M));  
 }  
 
 float radius(Ray ray) {
@@ -90,7 +101,7 @@ float delta_p_l(Ray ray) {
   float B2 = ray.constants.B2;
   float r = radius(ray);
   float drdl = constants_drdl(ray);
-  return B2 * B2 * constants_drdl(ray) / (r * r * r);
+  return B2 * drdl / (r * r * r);
 }
 
 float delta_p_theta(Ray ray) {
@@ -133,20 +144,20 @@ Ray constructRay(vec2 dir) {
   return ray;
 }
 
-float takeStep(float value, float delta) {
+float takeStep(float value, float delta, float stepSize) {
   /* We subtract as t moves downwards. */
-  return value - delta * STEP_SIZE;
+  return value - delta * stepSize;
 }
 
-Ray rayTakeStep(in Ray ray) {
+Ray rayTakeStep(in Ray ray, float stepSize) {
   Ray next = ray;
   /* Update position. */
-  next.l = takeStep(ray.l, delta_l(ray));
-  next.theta = takeStep(ray.theta, delta_theta(ray));
-  next.phi = takeStep(ray.phi, delta_phi(ray));
+  next.l = takeStep(ray.l, delta_l(ray), stepSize);
+  next.theta = takeStep(ray.theta, delta_theta(ray), stepSize);
+  next.phi = takeStep(ray.phi, delta_phi(ray), stepSize);
   /* Update canonical momenta. */
-  next.p_l = takeStep(ray.p_l, delta_p_l(ray));
-  next.p_theta = takeStep(ray.p_theta, delta_p_theta(ray));
+  next.p_l = takeStep(ray.p_l, delta_p_l(ray), stepSize);
+  next.p_theta = takeStep(ray.p_theta, delta_p_theta(ray), stepSize);
   return next;
 }
 
@@ -160,7 +171,7 @@ vec3 cartesianToSpherical(vec3 coord) {
 vec4 raytrace() {
   Ray ray = constructRay(cartesianToSpherical(cameraDirection()).yz);
   for (float t = 0.0; t >= T_THRESHOLD; t -= STEP_SIZE) {
-    ray = rayTakeStep(ray);
+    ray = rayTakeStep(ray, STEP_SIZE);
   }
   /* As a simplification for now, let's just do one color if it hits the lower
   celestial sphere and another color if it hits the other. */
@@ -170,7 +181,6 @@ vec4 raytrace() {
     return vec4(0.0, 0.0, 1.0, 1.0);
   }    
 }
-
 
 void main() {
   color = raytrace();

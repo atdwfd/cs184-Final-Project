@@ -11,14 +11,17 @@
 using namespace glm;
 
 const float PI = 3.14159265359;
-const float STEP_SIZE = 1.0;
+const float STEP_SIZE = 10000.0;
 const float FOV = 60.0;
-const float T_THRESHOLD = -1000000000.0; // We start at 0 and descend to this value.
-const float M = 2.0e30;
-const float rho = 4.0e10;
-const float a = 10.0; //rho / 10.0;
+const float T_THRESHOLD = -10e10; // We start at 0 and descend to this value.
+const float rho = 1.3; //4.0e10;
+const float W = 0.05 * rho;
+const float a = 0.5 * rho;
+const float M = W / 1.42953;
+//const float M = 2.0e30;
+//const float a = 1.0e5; //rho / 10.0;
 const vec2 i_resolution{800.f, 600.f};
-const vec3 i_camera_pos{0.f, 2.0f / PI, 0.f};
+const vec3 i_camera_pos{1.f, 2.0f / PI, 0.f};
 
 
 struct ConstantsOfMotion {
@@ -45,7 +48,7 @@ inline std::ostream &operator<<(std::ostream &os, const Ray &ray) {
      << "theta: " << ray.theta << ", "
      << "phi: " << ray.phi << ", "
      << "p_l: " << ray.p_l << ", "
-     << "p_theta: " << ray.p_l << ", "
+     << "p_theta: " << ray.p_theta << ", "
      << "p_phi: " << ray.p_phi << '}';
 
   return os;
@@ -71,7 +74,15 @@ inline float constantsOfMotion_B2(Ray ray) {
 }
 
 inline float constants_drdl(Ray ray) {
-  return (2.0 / PI) * atan(2.0 * ray.l / (PI * M));  
+    float result;
+    if (abs(ray.l) > a) {
+        result = (2.0 * atan((2.0 * (-a + abs(ray.l))) / (M * 3.14159265)) * sign(ray.l)) / 3.14159265;
+    } else {
+        result = 0.0;
+    }
+
+    return result;
+    //}//  return (2.0 / PI) * atan(2.0 * ray.l / (PI * M));  
 }  
 
 inline float radius(Ray ray) {
@@ -106,6 +117,9 @@ inline float delta_p_l(Ray ray) {
   float B2 = ray.constants.B2;
   float r = radius(ray);
   float drdl = constants_drdl(ray);
+  std::cout << "delta_p_l called with ";
+  std::cout << "B2 = " << B2 << ", r^3 = " << (r * r * r);
+  std::cout << ", drdl = " << drdl << '\n';
   return B2 * drdl / (r * r * r);
 }
 
@@ -166,30 +180,6 @@ inline Ray rayTakeStep(Ray ray, float stepSize) {
   next.p_theta = takeStep(ray.p_theta, delta_p_theta(ray), stepSize);
   return next;
 }
-
-/*
-float evaluateFunction(float initX, float delta, float y, float initY) {
-  return init_y + delta * (t - init_t);
-}
-*/
-
-
-/*
-Ray RKF45(in Ray ray, float tStart, float tEnd, float tolerance) {
-  float t = tStart;
-  float stepSize = 0.01;
-  while (t > tEnd) {
-    
-
-    Ray k1 = stepSize * ray;
-    // ray + 2/9 * k1
-    Ray k2 = stepSize * rayTakeStep(rayAdd(ray, 2.0 / 9.0) * k1, (2.0 / 9.0) * stepSize);
-    Ray k1 = rayTakeStep(ray, stepSize);
-    Ray k2 = rayTakeStep(
-    // continue here...
-  }
-}
-*/
 
 vec3 cartesianToSpherical(vec3 coord) {
   float r = length(coord);
